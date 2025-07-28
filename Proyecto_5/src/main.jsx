@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import { fetchNeoFeed } from './utils/api.jsx'
+import { fetchNeoFeed, fetchDonkiEvents } from './utils/api.jsx'
 
 async function testApi() {
   const startDate = '2025-07-20';
@@ -10,7 +10,10 @@ async function testApi() {
 
   try {
     const data = await fetchNeoFeed(startDate, endDate);
+    const data_DONKI= await fetchDonkiEvents('CME', startDate, endDate);
+
     console.log(' Observaciones obtenidas:', data);
+    console.log(' Eventos DONKI obtenidos:', data_DONKI);
   } catch (err) {
     console.error(' Error al consumir la API:', err.message);
   }
