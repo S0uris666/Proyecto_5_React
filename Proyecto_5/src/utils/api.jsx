@@ -1,20 +1,20 @@
 
-export async function fetchObservations(filters = {}) {
-  const queryParams = new URLSearchParams(filters).toString();
-  const url = `${import.meta.env.VITE_NOCTUASKY_API_URL}/observations?${queryParams}`;
-
+export const fetchNeoFeed = async (startDate, endDate) => {
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
-    }
+    const baseUrl = import.meta.env.VITE_NASA_API_URL;
+    const apiKey = import.meta.env.VITE_API_KEY;
 
+    const url = `${baseUrl}/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=${apiKey}`;
+    console.log("URL usada:", url); 
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Error al obtener datos de NeoWs");
     const data = await response.json();
-    return data;
+    return data.near_earth_objects;
   } catch (error) {
-    console.error('Error al obtener observaciones:', error);
+    console.error("Error en fetchNeoFeed:", error.message);
     throw error;
   }
-}
+};
 
 
