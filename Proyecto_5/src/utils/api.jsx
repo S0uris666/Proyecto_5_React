@@ -33,10 +33,11 @@ export const fetchDonkiEvents = async (type = "CME", startDate, endDate) => {
 };
 
 // Astronomy Picture of the Day (APOD)
-export const fetchApod = async () => {
+export const fetchApod = async (date) => {
   try {
-    const url = `${BASE_URL}/planetary/apod?api_key=${API_KEY}`;
-    console.log("URL APOD:", url); 
+    const url = date
+      ? `${BASE_URL}/planetary/apod?date=${date}&api_key=${API_KEY}`
+      : `${BASE_URL}/planetary/apod?api_key=${API_KEY}`;
 
     const response = await fetch(url);
     if (!response.ok) throw new Error("Error al obtener APOD");
