@@ -1,6 +1,7 @@
 const BASE_URL = import.meta.env.VITE_NASA_API_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
 
+//Datos sobre asteroides cercanos a la Tierra
 export const fetchNeoFeed = async (startDate, endDate) => {
   try {
     const url = `${BASE_URL}/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=${API_KEY}`;
