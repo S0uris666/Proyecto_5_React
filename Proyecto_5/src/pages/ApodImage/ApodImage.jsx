@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { fetchApod } from '../../utils/api';
+import {
+  Container,
+  Typography,
+  TextField,
+  CircularProgress,
+  Box,
+  FormLabel,
+  Card,
+  CardMedia,
+  CardContent
+} from '@mui/material';
 
 export default function ApodImage() {
   const [apod, setApod] = useState(null);
@@ -32,36 +43,63 @@ export default function ApodImage() {
   }
 
 
-    return (
-    <div style={{ textAlign: 'center', padding: '2rem' }}>
-      <h1>Imagen Astronímica del día</h1>
-      <label style={{marginBottom: '1rem',display: 'block'}}>
-        Selecciona una fecha:
-        <input
+   return (
+    <Container sx={{ py: 4 }}>
+      <Typography variant="h4" gutterBottom textAlign="center">
+        Imagen Astronómica del Día
+      </Typography>
+
+      <Box display="flex" flexDirection="column" alignItems="center" mb={4}>
+        <FormLabel htmlFor="apod-date">Selecciona una fecha</FormLabel>
+        <TextField
+          id="apod-date"
           type="date"
-          max={new Date().toISOString().split('T')[0]} // No permitir fechas futuras
           value={selectedDate}
           onChange={handleDateChange}
-          style={{ marginLeft: '0.5rem' }}
+         
+          sx={{ mt: 1, width: '250px' }}
         />
-        </label>
-        {loading && <p>Cargando...</p>}
-        {!loading && apod &&(<>
-          <h2>{apod.title}</h2>
-          <p>{apod.date}</p>
-          {apod.media_type==='image'?(<img src={apod.url} alt={apod.title} style={{ maxWidth: '100%', height: 'auto' }} />):(
-            <iframe
-              title="APOD video"
+      </Box>
+
+      {loading ? (
+        <Box display="flex" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      ) : apod ? (
+        <Card>
+          {apod.media_type === 'image' ? (
+            <CardMedia
+              component="img"
+              image={apod.url}
+              alt={apod.title}
+              sx={{ maxHeight: 600, objectFit: 'contain' }}
+            />
+          ) : (
+            <Box
+              component="iframe"
               src={apod.url}
+              title="APOD Video"
               allow="encrypted-media"
               allowFullScreen
-              style={{ width: '100%', height: '500px', marginTop: '1rem' }}
-            />)}
-      <p style={{ marginTop: '1rem' ,textAlign:'justify'}}>{apod.explanation}</p>
-      </>
+              sx={{ width: '100%', height: 500, border: 0 }}
+            />
+          )}
+          <CardContent>
+            <Typography variant="h5">{apod.title}</Typography>
+            <Typography variant="subtitle1" color="text.secondary">
+              {apod.date}
+            </Typography>
+            <Typography variant="body1" mt={2} textAlign="justify">
+              {apod.explanation}
+            </Typography>
+          </CardContent>
+        </Card>
+      ) : (
+        <Typography color="error" textAlign="center">
+          No se pudo cargar la imagen para esa fecha.
+        </Typography>
       )}
-      {!loading && !apod && <p>No se pudo cargar la imagen para esa fecha.</p>}
-    </div>
+    </Container>
   );
 
 }
