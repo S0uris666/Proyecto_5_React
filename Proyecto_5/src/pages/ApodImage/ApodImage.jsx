@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { fetchApod } from '../../utils/api';
+import React, { useEffect, useState } from "react";
+import { fetchApod } from "../../utils/api";
 import {
   Container,
   Typography,
@@ -9,30 +9,30 @@ import {
   FormLabel,
   Card,
   CardMedia,
-  CardContent
-} from '@mui/material';
+  CardContent,
+  Button,
+} from "@mui/material";
 
 export default function ApodImage() {
   const [apod, setApod] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState("");
 
-    // Cargar la imagen del día de la NASA
-    const loadApod = async (date) => {
-        try {
-            setLoading(true);
-            const data = await fetchApod(date);
-            setApod(data);
-        }catch (error) {
-            console.error('Error cargando la imagen del día:', error);
-            setApod(null);
-        } finally {
-            setLoading(false);
-        }
-    };
+  // Cargar la imagen del día de la NASA
+  const loadApod = async (date) => {
+    try {
+      setLoading(true);
+      const data = await fetchApod(date);
+      setApod(data);
+    } catch (error) {
+      console.error("Error cargando la imagen del día:", error);
+      setApod(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-
- useEffect(() => {
+  useEffect(() => {
     loadApod();
   }, []);
 
@@ -40,25 +40,38 @@ export default function ApodImage() {
     const date = event.target.value;
     setSelectedDate(date);
     loadApod(date);
-  }
+  };
 
+  const handleResetDate = () => {
+    setSelectedDate("");
+    loadApod();
+  };
 
-   return (
-    <Container sx={{ py: 4 }}>
+  return (
+    <Container maxWidth="md" sx={{ textAlign: "center", py: 4 }}>
       <Typography variant="h4" gutterBottom textAlign="center">
-        Imagen Astronómica del Día
+        Tu imagen Astronómica del Día
       </Typography>
 
-      <Box display="flex" flexDirection="column" alignItems="center" mb={4}>
+      <Box
+        display="flex"
+        justifyContent="center"
+        gap={2}
+        mb={3}
+        flexWrap="wrap"
+      >
         <FormLabel htmlFor="apod-date">Selecciona una fecha</FormLabel>
         <TextField
           id="apod-date"
           type="date"
           value={selectedDate}
           onChange={handleDateChange}
-         
-          sx={{ mt: 1, width: '250px' }}
+          sx={{ mt: 1, width: "250px" }}
+
         />
+        <Button variant="outlined" onClick={handleResetDate}>
+          Ver imagen de hoy
+        </Button>
       </Box>
 
       {loading ? (
@@ -67,12 +80,12 @@ export default function ApodImage() {
         </Box>
       ) : apod ? (
         <Card>
-          {apod.media_type === 'image' ? (
+          {apod.media_type === "image" ? (
             <CardMedia
               component="img"
               image={apod.url}
               alt={apod.title}
-              sx={{ maxHeight: 600, objectFit: 'contain' }}
+              sx={{ maxHeight: 600, objectFit: "contain" }}
             />
           ) : (
             <Box
@@ -81,7 +94,7 @@ export default function ApodImage() {
               title="APOD Video"
               allow="encrypted-media"
               allowFullScreen
-              sx={{ width: '100%', height: 500, border: 0 }}
+              sx={{ width: "100%", height: 500, border: 0 }}
             />
           )}
           <CardContent>
@@ -101,5 +114,4 @@ export default function ApodImage() {
       )}
     </Container>
   );
-
 }
