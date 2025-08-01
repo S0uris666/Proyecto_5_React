@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { fetchNeoFeed } from "../../utils/api";
 import {
   Container,
@@ -25,15 +25,16 @@ import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
 export default function Asteroids() {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedAsteroid, setSelectedAsteroid] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
-  const handleSearch = async () => {
+
+  const handleSearch = useCallback(async () => {
+    const { startDate, endDate } = dateRange;
     if (!startDate || !endDate) {
       setError("Por favor, selecciona ambas fechas");
       return;
@@ -62,13 +63,23 @@ export default function Asteroids() {
       const filteredData = Object.entries(result)
         .filter(([date, asteroids]) => asteroids.length > 0)
         .map(([date, asteroids]) => ({ date, asteroids }));
+
       setData(filteredData);
     } catch (err) {
-      setError("No se pudieron obtener los datos de asteroides: " + err.message);
+      setError(
+        "No se pudieron obtener los datos de asteroides: " + err.message
+      );
     } finally {
       setLoading(false);
     }
-  };
+  },[dateRange]);
+
+  useEffect(() => {
+    if (dateRange.startDate && dateRange.endDate) {
+      handleSearch();
+    }
+  }, [dateRange, handleSearch]);
+
 
   const formatDate = (dateString) => {
     return format(parseISO(dateString), "PPPP", { locale: es });
@@ -94,16 +105,16 @@ export default function Asteroids() {
         <TextField
           label="Fecha inicio"
           type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
+          value={dateRange.startDate}
+          onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
           sx={{ minWidth: 150 }}
           InputLabelProps={{ shrink: true }}
         />
         <TextField
           label="Fecha fin"
           type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
+          value={dateRange.endDate}
+          onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
           sx={{ minWidth: 150 }}
           InputLabelProps={{ shrink: true }}
         />
@@ -119,7 +130,9 @@ export default function Asteroids() {
       )}
 
       {!loading && !error && data.length === 0 && (
-        <Typography>No hay asteroides para las fechas seleccionadas.</Typography>
+        <Typography>
+          No hay asteroides para las fechas seleccionadas.
+        </Typography>
       )}
 
       {!loading && data.length > 0 && (
@@ -141,20 +154,35 @@ export default function Asteroids() {
                 </TableHead>
                 <TableBody>
                   {asteroids.map((asteroid) => {
-                    const diameter = asteroid.estimated_diameter.meters.estimated_diameter_max.toFixed(1);
+                    const diameter =
+                      asteroid.estimated_diameter.meters.estimated_diameter_max.toFixed(
+                        1
+                      );
                     const closeApproachData = asteroid.close_approach_data[0];
-                    const distance = parseFloat(closeApproachData.miss_distance.kilometers).toFixed(0);
-                    const velocity = parseFloat(closeApproachData.relative_velocity.kilometers_per_hour).toFixed(0);
-                    const isHazardous = asteroid.is_potentially_hazardous_asteroid;
+                    const distance = parseFloat(
+                      closeApproachData.miss_distance.kilometers
+                    ).toFixed(0);
+                    const velocity = parseFloat(
+                      closeApproachData.relative_velocity.kilometers_per_hour
+                    ).toFixed(0);
+                    const isHazardous =
+                      asteroid.is_potentially_hazardous_asteroid;
 
                     return (
-                      <TableRow key={asteroid.id} hover onClick={() => handleOpenDetails(asteroid)}>
+                      <TableRow
+                        key={asteroid.id}
+                        hover
+                        onClick={() => handleOpenDetails(asteroid)}
+                      >
                         <TableCell>{asteroid.name}</TableCell>
                         <TableCell>{diameter}</TableCell>
                         <TableCell>{distance}</TableCell>
                         <TableCell>{velocity}</TableCell>
                         <TableCell>
-                          <Chip label={isHazardous ? "Sí" : "No"} color={isHazardous ? "error" : "success"} />
+                          <Chip
+                            label={isHazardous ? "Sí" : "No"}
+                            color={isHazardous ? "error" : "success"}
+                          />
                         </TableCell>
                       </TableRow>
                     );
@@ -174,24 +202,41 @@ export default function Asteroids() {
             <DialogContent>
               <DialogContentText>
                 <Typography variant="body1">
-                  <strong>Diámetro máximo estimado:</strong> {selectedAsteroid.estimated_diameter.meters.estimated_diameter_max.toFixed(1)} metros
+                  <strong>Diámetro máximo estimado:</strong>{" "}
+                  {selectedAsteroid.estimated_diameter.meters.estimated_diameter_max.toFixed(
+                    1
+                  )}{" "}
+                  metros
                 </Typography>
                 <Typography variant="body1">
-                  <strong>Distancia mínima a la Tierra:</strong> {parseFloat(selectedAsteroid.close_approach_data[0].miss_distance.kilometers).toFixed(0)} km
+                  <strong>Distancia mínima a la Tierra:</strong>{" "}
+                  {parseFloat(
+                    selectedAsteroid.close_approach_data[0].miss_distance
+                      .kilometers
+                  ).toFixed(0)}{" "}
+                  km
                 </Typography>
                 <Typography variant="body1">
-                  <strong>Velocidad relativa:</strong> {parseFloat(selectedAsteroid.close_approach_data[0].relative_velocity.kilometers_per_hour).toFixed(0)} km/h
+                  <strong>Velocidad relativa:</strong>{" "}
+                  {parseFloat(
+                    selectedAsteroid.close_approach_data[0].relative_velocity
+                      .kilometers_per_hour
+                  ).toFixed(0)}{" "}
+                  km/h
                 </Typography>
                 <Typography variant="body1">
-                  <strong>Clasificación de peligro:</strong> {selectedAsteroid.is_potentially_hazardous_asteroid ? "POTENCIALMENTE PELIGROSO" : "No peligroso"}
+                  <strong>Clasificación de peligro:</strong>{" "}
+                  {selectedAsteroid.is_potentially_hazardous_asteroid
+                    ? "POTENCIALMENTE PELIGROSO"
+                    : "No peligroso"}
                 </Typography>
               </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseDialog}>Cerrar</Button>
-              <Button 
-                href={selectedAsteroid.nasa_jpl_url} 
-                target="_blank" 
+              <Button
+                href={selectedAsteroid.nasa_jpl_url}
+                target="_blank"
                 rel="noopener noreferrer"
                 color="primary"
               >
