@@ -11,21 +11,25 @@ import {
   CardMedia,
   CardContent,
   Button,
+  Alert
 } from "@mui/material";
 
 export default function ApodImage() {
   const [apod, setApod] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState("");
+  const [error, setError] = useState(null);
 
   // Cargar la imagen del día de la NASA
   const loadApod = async (date) => {
     try {
       setLoading(true);
+      setError(null);
       const data = await fetchApod(date);
       setApod(data);
     } catch (error) {
       console.error("Error cargando la imagen del día:", error);
+      setError("No se pudo cargar la imagen del día. Por favor, verifica la fecha o intenta más tarde.");
       setApod(null);
     } finally {
       setLoading(false);
@@ -80,6 +84,10 @@ export default function ApodImage() {
         <Box display="flex" justifyContent="center">
           <CircularProgress />
         </Box>
+        ) : error ? (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
       ) : apod ? (
         <Card>
           {apod.media_type === "image" ? (
