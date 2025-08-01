@@ -60,10 +60,12 @@ export default function ApodImage() {
         mb={3}
         flexWrap="wrap"
       >
-        <FormLabel htmlFor="apod-date">Selecciona una fecha</FormLabel>
+        
         <TextField
           id="apod-date"
+          label= "Fecha"
           type="date"
+          InputLabelProps={{ shrink: true }}
           value={selectedDate}
           onChange={handleDateChange}
           sx={{ mt: 1, width: "250px" }}
