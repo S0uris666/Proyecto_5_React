@@ -11,8 +11,21 @@ import {
   CardMedia,
   CardContent,
   Button,
-  Alert
+  Alert,
 } from "@mui/material";
+
+// Primer día válido para la API de APOD
+const MIN_DATE = "1995-07-01";
+
+// Retorna la fecha actual en formato YYYY-MM-DD
+const getToday = () => new Date().toISOString().split("T")[0];
+
+// Retorna la fecha de "un día como hoy" hace X años
+const getPastDate = (yearsAgo) => {
+  const today = new Date();
+  today.setFullYear(today.getFullYear() - yearsAgo);
+  return today.toISOString().split("T")[0];
+};
 
 export default function ApodImage() {
   const [apod, setApod] = useState(null);
@@ -21,15 +34,21 @@ export default function ApodImage() {
   const [error, setError] = useState(null);
 
   // Cargar la imagen del día de la NASA
-  const loadApod = async (date) => {
+  const loadApod = async (date = "") => {
     try {
       setLoading(true);
       setError(null);
+      if (date && date < MIN_DATE) {
+        throw new Error(`La fecha debe ser posterior a ${MIN_DATE}`);
+      }
       const data = await fetchApod(date);
       setApod(data);
     } catch (error) {
-      console.error("Error cargando la imagen del día:", error);
-      setError("No se pudo cargar la imagen del día. Por favor, verifica la fecha o intenta más tarde.");
+      console.error("Error cargando la imagen del día:", error.message);
+      setError(
+        error.message ||
+          "No se pudo cargar la imagen del día. Por favor, verifica la fecha o intenta más tarde."
+      );
       setApod(null);
     } finally {
       setLoading(false);
@@ -51,6 +70,12 @@ export default function ApodImage() {
     loadApod();
   };
 
+  const handleOneYearAgo = () => {
+    const oneYearAgo = getPastDate(1);
+    setSelectedDate(oneYearAgo);
+    loadApod(oneYearAgo);
+  };
+
   return (
     <Container maxWidth="md" sx={{ textAlign: "center", py: 4 }}>
       <Typography variant="h4" gutterBottom textAlign="center">
@@ -64,19 +89,24 @@ export default function ApodImage() {
         mb={3}
         flexWrap="wrap"
       >
-        
         <TextField
           id="apod-date"
-          label= "Fecha"
+          label="Fecha"
           type="date"
           InputLabelProps={{ shrink: true }}
           value={selectedDate}
           onChange={handleDateChange}
+          inputProps={{
+            min: MIN_DATE,
+            max: getToday(),
+          }}
           sx={{ mt: 1, width: "250px" }}
-
         />
         <Button variant="outlined" onClick={handleResetDate}>
           Ver imagen de hoy
+        </Button>
+                <Button variant="outlined" onClick={handleOneYearAgo}>
+          Hace 1 año
         </Button>
       </Box>
 
@@ -84,7 +114,7 @@ export default function ApodImage() {
         <Box display="flex" justifyContent="center">
           <CircularProgress />
         </Box>
-        ) : error ? (
+      ) : error ? (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
