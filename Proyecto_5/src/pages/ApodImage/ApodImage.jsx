@@ -14,15 +14,24 @@ import {
   Grid,
 } from "@mui/material";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+
 
 // Primer día válido para la API de APOD
 const MIN_DATE = "1995-07-01";
 const TODAY = new Date();
-const formatDate = (date) => date.toISOString().split("T")[0];
+const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+function parseLocalDate(dateStr) {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day, 12);
+}
 
 const getSameDayPreviousYears = (baseDate, earliestYear = 1995) => {
-  const current = new Date(baseDate);
+  const current = parseLocalDate(baseDate);
   const day = current.getDate();
   const month = current.getMonth(); // 0-indexed
   const currentYear = current.getFullYear();
@@ -30,7 +39,7 @@ const getSameDayPreviousYears = (baseDate, earliestYear = 1995) => {
   const dates = [];
 
   for (let year = currentYear - 1; year >= earliestYear; year--) {
-    const past = new Date(year, month, day);
+    const past = new Date(year, month, day, 12);//forzar la hora a mediodía para evitar problemas de zona horaria
     if (past < new Date(MIN_DATE)) break;
     dates.push(formatDate(past));
   }
@@ -206,7 +215,11 @@ export default function ApodImage() {
                         objectFit: "cover",
                         borderTopLeftRadius: "4px",
                         borderTopRightRadius: "4px",
+                        cursor: "pointer",
                       }}
+                      onClick={() =>
+                        (window.location.href = `/apod/${item.date}`)
+                      }
                     />
                   </Box>
                   <CardContent>
@@ -219,9 +232,7 @@ export default function ApodImage() {
                       {item.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {format(new Date(item.date), "d 'de' MMMM 'de' yyyy", {
-                        locale: es,
-                      })}
+                      {format(parseLocalDate(item.date), "MMMM d, yyyy")}
                     </Typography>
                   </CardContent>
                 </Card>
