@@ -43,10 +43,10 @@ function Header() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="fixed" sx={{ backgroundColor: "#1a1a1a", zIndex: 1201 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          {/* <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} /> */}
           <Typography
             variant="h6"
             noWrap
@@ -62,7 +62,7 @@ function Header() {
               textDecoration: "none",
             }}
           >
-            LOGO
+           🔭✨ NasaStats
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -119,7 +119,7 @@ function Header() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            NasaStats
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
