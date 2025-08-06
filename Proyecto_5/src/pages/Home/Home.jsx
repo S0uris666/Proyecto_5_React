@@ -13,7 +13,7 @@ export default function Home() {
         const data = await fetchApod(); 
         setApod(data);
       } catch (err) {
-        setError("No se pudo cargar la imagen del día.");
+        setError("No se pudo cargar la imagen del día.", err.message);
       } finally {
         setLoading(false);
       }
@@ -28,20 +28,7 @@ export default function Home() {
       <Typography variant="h3" gutterBottom align="center" sx={{ mt: 4, mb: 6 }}>
         🚀 NASAStats - Observatorio Estadístico Espacial
       </Typography>
-      <Stack spacing={2} direction="row" justifyContent="center" sx={{ mb: 4 }}>
-        <Button variant="contained" component={Link} to="/apod-image" sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}>
-          🔭 Imagen del día
-        </Button>
-        <Button variant="contained" component={Link} to="/asteroids" sx={{ bgcolor: 'secondary.main', '&:hover': { bgcolor: 'secondary.dark' } }}>
-          🌑 Ver Asteroides
-        </Button>
-        <Button variant="contained" component={Link} to="/solar-events" sx={{ bgcolor: 'success.main', '&:hover': { bgcolor: 'success.dark' } }}>
-          🌞 Ver Eventos Solares
-        </Button>
-        <Button variant="contained" component={Link} to="/dashboard" sx={{ bgcolor: 'info.main', '&:hover': { bgcolor: 'info.dark' } }}>
-          📊 Ir al Dashboard
-        </Button>
-      </Stack>
+      
       <Box sx={{ mt: 4, textAlign: 'center' }}>
         {loading ? (
           <Typography variant="h6">Cargando imagen del día...</Typography>
