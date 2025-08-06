@@ -33,8 +33,8 @@ export default function Asteroids() {
   const [openDialog, setOpenDialog] = useState(false);
 
 
-  const handleSearch = useCallback(async () => {
-    const { startDate, endDate } = dateRange;
+  const handleSearch = useCallback(async (startDate,endDate) => {
+    
     if (!startDate || !endDate) {
       setError("Por favor, selecciona ambas fechas");
       return;
@@ -72,11 +72,11 @@ export default function Asteroids() {
     } finally {
       setLoading(false);
     }
-  },[dateRange]);
+  },[]);
 
   useEffect(() => {
     if (dateRange.startDate && dateRange.endDate) {
-      handleSearch();
+      handleSearch(dateRange.startDate, dateRange.endDate);
     }
   }, [dateRange, handleSearch]);
 
