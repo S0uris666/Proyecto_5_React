@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home.jsx';
 import Asteroids from './pages/Asteroids/Asteroids.jsx';
 /*  import SolarEvents from './pages/SolarEvents/SolarEvents.jsx'; */
-import {Dashboard} from './pages/Dashboard/Dashboard.jsx';
+import Dashboard from './pages/Dashboard/Dashboard.jsx';
 import ApodImage from './pages/ApodImage/ApodImage.jsx'; 
 import ApodDetail from './pages/ApodImage/ApodDetail.jsx';
 import Layout from './components/Layout/Layout.jsx';

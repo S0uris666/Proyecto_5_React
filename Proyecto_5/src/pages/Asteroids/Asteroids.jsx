@@ -34,7 +34,6 @@ export default function Asteroids() {
 
 
   const handleSearch = useCallback(async (startDate,endDate) => {
-    
     if (!startDate || !endDate) {
       setError("Por favor, selecciona ambas fechas");
       return;
