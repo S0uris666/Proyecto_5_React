@@ -44,7 +44,6 @@ PROYECTO_5/
 │ ├── App.jsx # Componente raíz de la aplicación
 │ ├── Router.jsx # Configuración de rutas con React Router
 │ ├── main.jsx # Punto de entrada principal
-│ └── index.css # Estilos globales
 ├── .env # Variables de entorno (API keys, etc.)
 ├── .gitignore # Archivos y carpetas ignoradas por Git
 ├── eslint.config.js # Configuración de ESLint
